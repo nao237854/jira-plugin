@@ -47,6 +47,7 @@ export interface IIssue {
     status: {
       name: string;
     };
+    labels: Array<string>;
     project: {
       id: string;
       key: string;
@@ -116,7 +117,6 @@ export interface IAddWorkLog {
   comment?: string;
   started: string;
 }
-
 export interface IIssueType {
   id: string;
   description: string;

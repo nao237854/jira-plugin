@@ -104,6 +104,7 @@ suite('Configuration', () => {
         id: '',
         key: 'TEST',
         fields: {
+          labels:[],
           summary: '',
           status: {
             name: ''

@@ -14,7 +14,7 @@ export default async function setWorkingIssue(storedWorkingIssue: IWorkingIssue,
       // YES - restart tracking time for the stored working issue
       store.state.workingIssue = storedWorkingIssue;
       vscode.window.showInformationMessage(
-        `PENDING WORKING ISSUE: ${store.state.workingIssue.issue.key} | timeSpent: ${utilities.secondsToHHMMSS(
+        `PENDING WORKING ISSUE: ${store.state.workingIssue.issue.key} | Time spent: ${utilities.secondsToHHMMSS(
           store.state.workingIssue.trackingTime
         )}`
       );
@@ -38,7 +38,7 @@ export default async function setWorkingIssue(storedWorkingIssue: IWorkingIssue,
         statusBar.clearWorkingIssueInterval();
         // modal for create Worklog
         let action = await vscode.window.showInformationMessage(
-          `Add worklog for the previous working issue ${workingIssue.issue.key} | timeSpent: ${utilities.secondsToHHMMSS(
+          `Add worklog for the previous working issue ${workingIssue.issue.key} | Time spent: ${utilities.secondsToHHMMSS(
             workingIssue.trackingTime
           )} ?`,
           ACTIONS.YES_WITH_COMMENT,
@@ -57,6 +57,9 @@ export default async function setWorkingIssue(storedWorkingIssue: IWorkingIssue,
           await vscode.commands.executeCommand(
             'jira-plugin.issueAddWorklog',
             store.state.workingIssue.issue.key,
+            store.state.workingIssue.issue.fields.project.key,
+            store.state.workingIssue.issue.fields.summary,
+            store.state.workingIssue.issue.fields.labels,
             store.state.workingIssue.trackingTime,
             comment || ''
           );

@@ -30,6 +30,7 @@ const jiraClient = require('jira-connector');
 
 export class Jira implements IJira {
   jiraInstance: any;
+  togglInstance: any;
   baseUrl: string;
 
   constructor() {
@@ -146,7 +147,7 @@ export class Jira implements IJira {
     return await this.jiraInstance.issue.addComment({ ...params, body: params.comment.body, properties: params.comment.properties });
   }
 
-  async addWorkLog(params: IAddWorkLog): Promise<void> {
+  async addWorkLog(params: IAddWorkLog): Promise<any> {
     return await this.jiraInstance.issue.addWorkLog(params);
   }
 

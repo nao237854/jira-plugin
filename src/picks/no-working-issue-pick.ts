@@ -17,6 +17,7 @@ export default class NoWorkingIssuePick implements QuickPickItem {
       key: NO_WORKING_ISSUE.key,
       fields: {
         summary: '',
+        labels: [],
         status: {
           name: '',
         },

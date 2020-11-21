@@ -7,6 +7,7 @@ import NotificationService from './notifications.service';
 import SelectValuesService from './select-values.service';
 import StatusBarService from './status-bar.service';
 import StoreService from './store.service';
+import TogglService from './toggl.service';
 import UtilitiesService from './utilities.service';
 
 export const store = new StoreService();
@@ -16,6 +17,7 @@ export const logger = new LoggerService();
 export const utilities = new UtilitiesService();
 export const selectValues = new SelectValuesService();
 export const gitIntegration = new GitIntegrationService();
+export const toggl = new TogglService();
 export const statusBar = new StatusBarService();
 export const notifications = new NotificationService();
 export const issueHelper = new IssueHelperService();

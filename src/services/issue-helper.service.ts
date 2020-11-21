@@ -182,6 +182,7 @@ export default class IssueHelperService {
               id: '',
               fields: {
                 summary: '',
+                labels: [],
                 status: {
                   name: '',
                 },

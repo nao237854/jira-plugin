@@ -41,6 +41,8 @@ export default async function stopWorkingIssue(storedWorkingIssue: IWorkingIssue
         await vscode.commands.executeCommand(
           'jira-plugin.issueAddWorklog',
           store.state.workingIssue.issue.key,
+          store.state.workingIssue.issue.fields.project.key,
+          store.state.workingIssue.issue.fields.summary,
           store.state.workingIssue.trackingTime,
           comment || ''
         );

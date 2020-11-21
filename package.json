@@ -2,7 +2,7 @@
   "name": "jira-plugin",
   "displayName": "Jira Plugin",
   "description": "Manage your on-premises/cloud Jira in vscode",
-  "version": "0.22.2",
+  "version": "0.22.2-toggl",
   "publisher": "gioboa",
   "icon": "images/icons/icon.png",
   "galleryBanner": {
@@ -39,15 +39,15 @@
     "compile": "npm run clean && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "git update-index --skip-worktree ./test/utils/settings.ts && node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && TYPE=1 node ./scripts/rename-files.js && node ./node_modules/vscode/bin/test && TYPE=2 node ./scripts/rename-files.js",
+    "test": "npm run compile && set TYPE=1&& node ./scripts/rename-files.js && node node_modules/vscode/bin/test && set TYPE=2&& node ./scripts/rename-files.js",
     "setup:settings": "npm run compile && TYPE=3 node ./scripts/rename-files.js && node ./node_modules/vscode/bin/test && TYPE=4 node ./scripts/rename-files.js",
     "setup:settings:insiders": "npm run compile && TYPE=3 node ./scripts/rename-files.js && CODE_VERSION='insiders' node ./node_modules/vscode/bin/test && TYPE=4 node ./scripts/rename-files.js",
-    "prelint": "prettier --write 'src/**/*.ts'",
-    "lint": "tslint 'src/**/*.ts' --format stylish --fix"
+    "prelint": "prettier --write src/**/*.ts",
+    "lint": "tslint src/**/*.ts --format stylish --fix"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "git stash -q --keep-index && npm run lint && npm run test && git add -u && git stash pop -q"
+      "pre-commit": "git stash -q --keep-index && npm run lint && git add -u && git stash pop -q"
     }
   },
   "contributes": {
@@ -192,6 +192,19 @@
           "type": "integer",
           "description": "Minimum tracking time for show the Worklog modal and create Jira worklog (expressed in minutes)",
           "default": 0
+        },
+        "jira-plugin.togglApiKey": {
+          "type": "string",
+          "description": "Your Toggl api key",
+          "default": ""
+        },
+        "jira-plugin.togglProjectKeyMapping": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Setting for map projects key for toggl integration (e.g. CUSTOMKEY=JIRAKEY)",
+          "default": []
         }
       }
     },
@@ -455,6 +468,7 @@
     "vscode": "^1.1.37"
   },
   "dependencies": {
-    "jira-connector": "^3.1.0"
+    "jira-connector": "^3.1.0",
+    "toggl-client": "^1.0.2"
   }
 }

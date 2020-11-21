@@ -16,6 +16,7 @@ export const CONFIG = {
   ISSUE_LIST_AUTO_REFRESH_INTERVAL: 'issueListAutoRefreshInterval',
   NUMBER_ISSUES_IN_LIST: 'numberOfIssuesInList',
   PROJECT_KEY_MAPPING: 'projectKeyMapping',
+  TOGGL_PROJECT_KEY_MAPPING: 'togglProjectKeyMapping',
   PROJECTS_TO_HIDE: 'projectsToHide',
   PROJECTS_TO_SHOW: 'projectsToShow',
   REQUESTS_TIMEOUT: 'requestsTimeout',
@@ -30,6 +31,7 @@ export const CONFIG = {
   WORKING_PROJECT: 'workingProject',
   WORKLOG_MINIMUM_TRACKING_TIME: 'worklogMinimumTrackingTime',
   WORKING_ISSUE_SEARCH_KEY: 'workingIssueFilter',
+  TOGGL_API_KEY: 'togglApiKey',
 };
 
 // all the tracking time mode
