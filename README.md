@@ -2,32 +2,28 @@
 
 ## Key Features
 
-- [View Jira issues](#explorer)
-- Create new Jira issue
-- Change explorer 'Group By' field
-- [Search/Filter Jira issues](#filters)
-  - All issues
-  - Current sprint issues
-  - Issue by id
-  - Issues filtered by status
-  - Issues filtered by status and assignee
-  - Issues filtered by summary
-  - My issues filtered by status
-  - Favourites filters
-- Open Jira issue in the browser (left click on the issue)
-- Change Jira issue status
-- Change Jira issue assignee
-- Add comment to Jira issue
-- Copy to clipboard Jira issue Key+Summary
-- Copy to clipboard Jira issue remote url
-- Checkout or create git branch
-- [Set current working project](#working-project)
-- [Set current working issue](#working-issue)
-- [Trace the time spended on the current working issue](#working-issue)
-- Insert current Working Issue Key+Summary comment
-- [Jira Issue Key+Summary link to open Jira issue in the browser](#link-to-open-jira-issue-in-the-browser)
-- [Git Integration](#settings)
-- [Enable Check Notifications](#settings)
+- [jira-plugin README](#jira-plugin-readme)
+  - [Key Features](#key-features)
+  - [Changelog](#changelog)
+  - [Support](#support)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Setup](#setup)
+  - [Set working project](#set-working-project)
+  - [Settings](#settings)
+  - [Explorer](#explorer)
+  - [Explorer commands](#explorer-commands)
+    - [Filters](#filters)
+  - [Issue commands (right click on issue in explorer)](#issue-commands-right-click-on-issue-in-explorer)
+  - [Status bar](#status-bar)
+    - [Working project](#working-project)
+    - [Working issue](#working-issue)
+    - [Link to open Jira issue in the browser](#link-to-open-jira-issue-in-the-browser)
+  - [Want to contribute?](#want-to-contribute)
+  - [Contributors](#contributors)
+  - [License](#license)
+  - [Versioning](#versioning)
+  - [Resources](#resources)
 
 ## Changelog
 
@@ -90,6 +86,10 @@ The extension store credentials in VS Code settings.<br><br>
   Enable working issue functionality in status bar
 - **Git Integration** <br>
   Automatically watch for branch switching and select appropriate project and working issue
+- **Toggl Api Key** <br>
+  Your Toggl api key
+- **Toggl Project Key Mapping** <br>
+  Setting for map projects key for toggl integration (e.g. CUSTOMKEY=JIRAKEY)
 - **Group Task And Subtasks** <br>
   Group task and subtasks into explorer
 - **Issue List Auto Refresh Interval** <br>
@@ -131,9 +131,9 @@ The extension store credentials in VS Code settings.<br><br>
 values:<br>
 
 1.  `hybrid` - will increment tracking time always but if VS Code remain idle more then "trackingTimeModeHybridTimeout" will discard the time addition<br>
-1.  `always` - will increment tracking time always <br>
-1.  `vsCodeFocus` - will increment tracking time only if VS Code is focused<br>
-1.  `never` - will not tracking time<br>
+2.  `always` - will increment tracking time always <br>
+3.  `vsCodeFocus` - will increment tracking time only if VS Code is focused<br>
+4.  `never` - will not tracking time<br>
 
 ## Explorer
 
