@@ -203,7 +203,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Setting for map projects key for toggl integration (e.g. CUSTOMKEY=JIRAKEY)",
+          "description": "Setting for map projects key for toggl integration (e.g. PROJECTID=JIRAKEY)",
           "default": []
         }
       }

@@ -14,7 +14,7 @@ export default async function setWorkingIssue(storedWorkingIssue: IWorkingIssue,
       // YES - restart tracking time for the stored working issue
       store.state.workingIssue = storedWorkingIssue;
       vscode.window.showInformationMessage(
-        `PENDING WORKING ISSUE: ${store.state.workingIssue.issue.key} | Time spent: ${utilities.secondsToHHMMSS(
+        `Pending working issue: ${store.state.workingIssue.issue.key} | Time spent: ${utilities.secondsToHHMMSS(
           store.state.workingIssue.trackingTime
         )}`
       );
