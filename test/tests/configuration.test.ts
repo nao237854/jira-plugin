@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import ConfigurationService from '../../src/services/configuration.service';
 import { IWorkingIssue } from '../../src/services/http.model';
 import StoreService from '../../src/services/store.service';
-import { CONFIG, DEFAULT_WORKING_ISSUE_STATUS } from '../../src/shared/constants';
+import { CONFIG } from '../../src/shared/constants';
 import { backupSettings, restoreSettings } from '../utils/utils';
 
 suite('Configuration', () => {
@@ -44,13 +44,6 @@ suite('Configuration', () => {
       expected: `${CONFIG.ENABLE_WORKING_ISSUE}_test_value`,
       equal: true
     },
-    {
-      title: `${CONFIG.WORKING_ISSUE_STATUSES}`,
-      config: CONFIG.WORKING_ISSUE_STATUSES,
-      value: `In Progess, Closed`,
-      expected: `In Progess, Closed`,
-      equal: true
-    }
   ];
   let settingsBkp = <any>{};
 
@@ -116,6 +109,7 @@ suite('Configuration', () => {
           }
         }
       },
+      togglTimeEntryId:0,
       trackingTime: 0,
       awayTime: 0,
       stopped: false
@@ -123,33 +117,6 @@ suite('Configuration', () => {
     await configurationService.setGlobalWorkingIssue(workingIssue);
     const storedWOrkingIssue = await configurationService.getGlobalWorkingIssue();
     assert.strictEqual(storedWOrkingIssue, JSON.stringify(workingIssue));
-  });
-
-  test(`WorkingIssueStatuses in statuses list`, async () => {
-    await configurationService.set(CONFIG.WORKING_ISSUE_STATUSES, 'In Progress, Closed');
-    const statuses = configurationService.workingIssueStatuses([
-      { description: 'In Progress', name: 'In Progress' },
-      { description: 'Closed', name: 'Closed' }
-    ]);
-    assert.strictEqual(statuses, `'In Progress','Closed'`);
-  });
-
-  test(`WorkingIssueStatuses only one in statuses list`, async () => {
-    await configurationService.set(CONFIG.WORKING_ISSUE_STATUSES, 'In Progress, Abc');
-    const statuses = configurationService.workingIssueStatuses([
-      { description: 'In Progress', name: 'In Progress' },
-      { description: 'Closed', name: 'Closed' }
-    ]);
-    assert.strictEqual(statuses, `'In Progress'`);
-  });
-
-  test(`WorkingIssueStatuses not in statuses list`, async () => {
-    await configurationService.set(CONFIG.WORKING_ISSUE_STATUSES, 'Abc');
-    const statuses = configurationService.workingIssueStatuses([
-      { description: 'In Progress', name: 'In Progress' },
-      { description: 'Closed', name: 'Closed' }
-    ]);
-    assert.strictEqual(statuses, `'${DEFAULT_WORKING_ISSUE_STATUS}'`);
   });
 
   test(`Restore Settings Backup`, async () => {

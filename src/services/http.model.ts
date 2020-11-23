@@ -109,6 +109,7 @@ export interface IWorkingIssue {
   trackingTime: number;
   awayTime: number;
   stopped: boolean;
+  togglTimeEntryId: number;
 }
 
 export interface IAddWorkLog {

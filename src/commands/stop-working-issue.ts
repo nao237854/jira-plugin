@@ -41,8 +41,6 @@ export default async function stopWorkingIssue(storedWorkingIssue: IWorkingIssue
         await vscode.commands.executeCommand(
           'jira-plugin.issueAddWorklog',
           store.state.workingIssue.issue.key,
-          store.state.workingIssue.issue.fields.project.key,
-          store.state.workingIssue.issue.fields.summary,
           store.state.workingIssue.trackingTime,
           comment || ''
         );
@@ -50,7 +48,7 @@ export default async function stopWorkingIssue(storedWorkingIssue: IWorkingIssue
     }
     // set the new working issue
     // store.changeStateWorkingIssue(newIssue, 0);
-    store.changeStateWorkingIssue(new NoWorkingIssuePick().pickValue, 0);
+    store.changeStateWorkingIssue(new NoWorkingIssuePick().pickValue, 0, 0);
   } else {
     vscode.window.showInformationMessage('You are not currently working on a ticket');
   }

@@ -22,6 +22,7 @@ export default class StoreService {
     },
     workingIssue: {
       issue: new NoWorkingIssuePick().pickValue,
+      togglTimeEntryId: 0,
       trackingTime: 0,
       awayTime: 0,
       stopped: false,
@@ -90,12 +91,12 @@ export default class StoreService {
     issuesExplorer.refresh();
   }
 
-  public async changeStateWorkingIssue(issue: IIssue, trackingTime: number): Promise<void> {
+  public async changeStateWorkingIssue(issue: IIssue, trackingTime: number, togglTimeEntryId: number): Promise<void> {
     if (issue.key !== NO_WORKING_ISSUE.key) {
       await gitIntegration.switchToWorkingTicketBranch(issue);
     }
     const awayTime: number = 0; // FIXME: We don't need awayTime when changing issues, not sure best way to handle this.
-    this.state.workingIssue = { issue, trackingTime, awayTime, stopped: false };
+    this.state.workingIssue = { issue, trackingTime, awayTime, stopped: false, togglTimeEntryId };
     statusBar.updateWorkingIssueItem();
   }
 

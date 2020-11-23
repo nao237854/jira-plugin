@@ -131,13 +131,9 @@ export default class SelectValuesService {
       case SEARCH_MODE.AUTO_REFRESH: {
         return [store.state.currentSearch.filter, store.state.currentSearch.jql];
       }
-      case SEARCH_MODE.WORKING_ISSUES: {
-        const statuses = configuration.workingIssueStatuses();
+      case SEARCH_MODE.MY: {
         const assignees = configuration.workingIssueAssignees();
-        return [
-          `STATUS: ${statuses}, ASSIGNEES: ${assignees}`,
-          `project = '${project}' AND status in (${statuses}) AND assignee in (${assignees}) ORDER BY status ASC, updated DESC`,
-        ];
+        return [`ASSIGNEES: ${assignees}`, `project = '${project}' AND assignee in (${assignees}) ORDER BY status ASC, updated DESC`];
       }
       case SEARCH_MODE.CURRENT_SPRINT: {
         return [
@@ -226,7 +222,7 @@ export default class SelectValuesService {
       if (store.canExecuteJiraAPI()) {
         const project = configuration.get(CONFIG.WORKING_PROJECT);
         if (store.verifyCurrentProject(project)) {
-          const [filter, jql] = await this.getFilterAndJQL(SEARCH_MODE.WORKING_ISSUES, project);
+          const [filter, jql] = await this.getFilterAndJQL(SEARCH_MODE.MY, project);
           if (!!jql) {
             const result = await store.state.jira.search({ jql, maxResults: SEARCH_MAX_RESULTS });
             issues = result.issues || [];

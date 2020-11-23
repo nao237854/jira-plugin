@@ -25,9 +25,7 @@ export const CONFIG = {
   TRACKING_TIME_MODE_HYBRID_TIMEOUT: 'trackingTimeModeHybridTimeout',
   USERNAME: 'username',
   WORKING_ISSUE_ASSIGNEES: 'workingIssueAssignees',
-  WORKING_ISSUE_CHANGE_STATUS_AFTER_SELECTION: 'workingIssueChangeStatusAfterSelection',
   WORKING_ISSUE_SHOW_TIMER: 'workingIssueShowTimer',
-  WORKING_ISSUE_STATUSES: 'workingIssueStatues',
   WORKING_PROJECT: 'workingProject',
   WORKLOG_MINIMUM_TRACKING_TIME: 'worklogMinimumTrackingTime',
   WORKING_ISSUE_SEARCH_KEY: 'workingIssueFilter',
@@ -42,7 +40,6 @@ export const TRACKING_TIME_MODE = {
   NEVER: 'never',
 };
 
-export const DEFAULT_WORKING_ISSUE_STATUS = 'In progress';
 export const DEFAULT_WORKING_ISSUE_ASSIGNEE = 'currentUser()';
 
 // modal answers
@@ -65,7 +62,7 @@ export const SEARCH_MODE = {
   STATUS: 'STATUS',
   MY_STATUS: 'MY_STATUS',
   STATUS_ASSIGNEE: 'STATUS_ASSIGNEE',
-  WORKING_ISSUES: 'WORKING_ISSUES',
+  MY: 'MY',
   FAVOURITES_FILTERS: 'FAVOURITES_FILTERS',
   SUMMARY: 'SUMMARY',
   REFRESH: 'REFRESH',

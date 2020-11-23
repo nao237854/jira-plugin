@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { configuration, store, utilities } from '.';
+import { configuration, store, toggl, utilities } from '.';
 import changeIssueStatus from '../commands/change-issue-status';
 import { IssueItem } from '../explorer/item/issue-item';
 import { CONFIG, NO_WORKING_ISSUE, TRACKING_TIME_MODE } from '../shared/constants';
@@ -59,11 +59,20 @@ export default class StatusBarService {
   }
 
   // setup working issue item
-  public updateWorkingIssueItem(): void {
+  public async updateWorkingIssueItem(): Promise<void> {
     this.clearWorkingIssueInterval();
     this.workingIssueItem.color = undefined;
     if (store.state.workingIssue.issue.key !== NO_WORKING_ISSUE.key) {
       if (configuration.get(CONFIG.TRACKING_TIME_MODE) !== TRACKING_TIME_MODE.NEVER) {
+        if (toggl.enabled) {
+          const timeEntry = await toggl.startTimeEntry({
+            issueKey: store.state.workingIssue.issue.key,
+            projectKey: store.state.workingIssue.issue.fields.project.key,
+            summary: store.state.workingIssue.issue.fields.summary,
+            labels: store.state.workingIssue.issue.fields.labels,
+          });
+          store.state.workingIssue.togglTimeEntryId = timeEntry.id;
+        }
         this.startWorkingIssueInterval();
       }
     } else {
@@ -76,17 +85,14 @@ export default class StatusBarService {
     store.state.workingIssue.awayTime = 0;
     this.workingIssueItem.text = this.workingIssueItemText(store.state.workingIssue);
     this.workingIssueItem.show();
-    if (
-      !!configuration.get(CONFIG.WORKING_ISSUE_CHANGE_STATUS_AFTER_SELECTION) &&
-      store.state.workingIssue.issue.key !== NO_WORKING_ISSUE.key
-    ) {
+    if (store.state.workingIssue.issue.key !== NO_WORKING_ISSUE.key) {
       changeIssueStatus(new IssueItem(store.state.workingIssue.issue));
     }
   }
 
-  public clearWorkingIssueInterval(): void {
+  public async clearWorkingIssueInterval(): Promise<void> {
     if (this.intervalId) {
-      this.toggleWorkingIssueTimer();
+      await this.toggleWorkingIssueTimer();
       if (store.state.workingIssue.issue.key === NO_WORKING_ISSUE.key) {
         this.toggleWorkingIssueTimerItem.hide();
       }
@@ -149,13 +155,31 @@ export default class StatusBarService {
     return text;
   }
 
-  public toggleWorkingIssueTimer(): void {
+  public async toggleWorkingIssueTimer(): Promise<any> {
     store.state.workingIssue.stopped = !store.state.workingIssue.stopped;
+    if (!store.state.workingIssue.stopped && toggl.enabled && !store.state.workingIssue.togglTimeEntryId) {
+      const timeEntry = await toggl.startTimeEntry({
+        issueKey: store.state.workingIssue.issue.key,
+        projectKey: store.state.workingIssue.issue.fields.project.key,
+        summary: store.state.workingIssue.issue.fields.summary,
+        labels: store.state.workingIssue.issue.fields.labels,
+      });
+      store.state.workingIssue.togglTimeEntryId = timeEntry.id;
+    } else if (store.state.workingIssue.stopped && toggl.enabled && store.state.workingIssue.togglTimeEntryId) {
+      await toggl.stopTimeEntry(store.state.workingIssue.togglTimeEntryId);
+      store.state.workingIssue.togglTimeEntryId = 0;
+    }
     this.updateToggleWorkingIssueTimerItem();
   }
 
   public async dispose(): Promise<void> {
-    this.clearWorkingIssueInterval();
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    if (store.state.workingIssue.togglTimeEntryId) {
+      toggl.stopTimeEntry(store.state.workingIssue.togglTimeEntryId);
+      store.state.workingIssue.togglTimeEntryId = 0;
+    }
     this.workingIssueItem.dispose();
     this.workingProjectItem.dispose();
   }

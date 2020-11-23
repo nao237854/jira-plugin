@@ -158,30 +158,20 @@
           "type": "string",
           "description": "Choose which internal filter constant is used for 'Select Working Issue' filter. Note: Requires reload on change",
           "enum": [
-            "WORKING_ISSUES",
+            "MY",
             "ALL"
           ],
-          "default": "WORKING_ISSUES"
+          "default": "MY"
         },
         "jira-plugin.workingIssueAssignees": {
           "type": "string",
           "description": "Assignees used for extract working issue list (e.g. robert.smith, michael.jones) (n.b: CURRENT_USER is the placeholder for the current user)",
           "default": "CURRENT_USER"
         },
-        "jira-plugin.workingIssueChangeStatusAfterSelection": {
-          "type": "boolean",
-          "description": "Change working issue status after selection",
-          "default": false
-        },
         "jira-plugin.workingIssueShowTimer": {
           "type": "boolean",
           "description": "Show/Hide working issue timer in status bar",
           "default": true
-        },
-        "jira-plugin.workingIssueStatues": {
-          "type": "string",
-          "description": "Statuses used for extract working issue list (e.g. In Progress, Development In Progress, Test in Progress)",
-          "default": "In progress"
         },
         "jira-plugin.workingProject": {
           "type": "string",

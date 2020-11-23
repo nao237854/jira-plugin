@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { configuration, logger } from '.';
 import { CONFIG } from '../shared/constants';
-import { IAddWorkLog, IToggl } from './toggl.model';
+import { IAddWorkLog, IStartTimeEntry, IToggl } from './toggl.model';
 
 const togglClient = require('toggl-client');
 
@@ -59,6 +59,20 @@ export default class Toggl implements IToggl {
       pid: this.mapProjectKeyIfNeeed(params.projectKey),
       created_with: 'curl',
     });
+  }
+
+  async startTimeEntry(params: IStartTimeEntry): Promise<any> {
+    return await this.togglInstance.timeEntries.start({
+      description: `${params.issueKey} ${params.summary}`,
+      tags: params.labels,
+      billable: true,
+      pid: this.mapProjectKeyIfNeeed(params.projectKey),
+      created_with: 'curl',
+    });
+  }
+
+  async stopTimeEntry(id: number): Promise<any> {
+    return await this.togglInstance.timeEntries.stop(id);
   }
 
   async openWebsite(): Promise<void> {
