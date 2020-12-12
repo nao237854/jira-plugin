@@ -3,17 +3,8 @@ import { configuration, issuesExplorer, logger, store, utilities } from '.';
 import BackPick from '../picks/back-pick';
 import NoWorkingIssuePick from '../picks/no-working-issue-pick';
 import UnassignedAssigneePick from '../picks/unassigned-assignee-pick';
-import {
-  BACK_PICK_LABEL,
-  CONFIG,
-  GROUP_BY_FIELDS,
-  LOADING,
-  NO_WORKING_ISSUE,
-  SEARCH_MAX_RESULTS,
-  SEARCH_MODE,
-  UNASSIGNED,
-} from '../shared/constants';
-import { IAssignee, IFavouriteFilter, IIssue, IIssueType } from './http.model';
+import { BACK_PICK_LABEL, CONFIG, GROUP_BY_FIELDS, LOADING, NO_WORKING_ISSUE, SEARCH_MAX_RESULTS, SEARCH_MODE } from '../shared/constants';
+import { IAssignee, IFavouriteFilter, IIssue, IIssueType, ITransition } from './http.model';
 
 export default class SelectValuesService {
   private intervalInstance: NodeJS.Timer | undefined;
@@ -112,10 +103,8 @@ export default class SelectValuesService {
         const { status, assignee } = await this.selectStatusAndAssignee();
         if (!!status && !!assignee) {
           return [
-            `STATUS: ${status} ASSIGNEE: ${assignee}`,
-            `project = '${project}' AND status = '${status}' AND assignee = ${
-              assignee !== UNASSIGNED ? `'${assignee}'` : `null`
-            } ORDER BY status ASC, updated DESC`,
+            `STATUS: ${status} ASSIGNEE: ${assignee.displayName}`,
+            `project = '${project}' AND status = '${status}' AND assignee = ${assignee.displayName} ORDER BY status ASC, updated DESC`,
           ];
         }
         break;
@@ -281,22 +270,23 @@ export default class SelectValuesService {
   }
 
   // selection for assignees
-  public async selectAssignee(
-    unassigned: boolean,
-    back: boolean,
-    onlyKey: boolean,
-    preLoadedPicks: IAssignee[] | undefined
-  ): Promise<string | IAssignee> {
+  public async selectAssignee(unassigned: boolean, back: boolean, preLoadedPicks: IAssignee[] | undefined): Promise<IAssignee> {
+    const emptyAssignee: IAssignee = {
+      accountId: '',
+      name: '',
+      displayName: '',
+      active: false,
+    };
     try {
       const project = configuration.get(CONFIG.WORKING_PROJECT);
       if (store.verifyCurrentProject(project)) {
         const assignees = preLoadedPicks || (await store.state.jira.getAssignees(project));
-        const picks = (assignees || [])
+        const picks: Array<any> = (assignees || [])
           .filter((assignee: IAssignee) => assignee.active === true)
           .map((assignee: IAssignee) => {
             return {
-              pickValue: onlyKey ? assignee.key : assignee,
-              label: assignee.key || assignee.displayName,
+              pickValue: assignee,
+              label: assignee.displayName || assignee.accountId,
               description: assignee.displayName,
             };
           });
@@ -311,18 +301,25 @@ export default class SelectValuesService {
           matchOnDetail: true,
           placeHolder: 'Select an assignee',
         });
-        return selected ? selected.pickValue : '';
+        return selected ? selected.pickValue : emptyAssignee;
       } else {
         throw new Error(`Working project not correct, please select one valid project. ("Set working project" command)`);
       }
     } catch (err) {
       logger.printErrorMessageInOutputAndShowAlert(err);
     }
-    return '';
+    return emptyAssignee;
   }
 
   // only the possible transitions
-  public async selectTransition(issueKey: string): Promise<string | null | undefined> {
+  public async selectTransition(issueKey: string): Promise<ITransition> {
+    const emptyTransition: ITransition = {
+      id: '',
+      name: '',
+      to: {
+        name: '',
+      },
+    };
     try {
       const transitions = await store.state.jira.getTransitions(issueKey);
       const picks = transitions.transitions.map((transition) => ({
@@ -335,17 +332,15 @@ export default class SelectValuesService {
         placeHolder: `Select transition to execute for ${issueKey}`,
         matchOnDescription: true,
       });
-      return selected ? selected.pickValue : undefined;
+
+      return selected ? selected.transition : emptyTransition;
     } catch (err) {
       logger.printErrorMessageInOutputAndShowAlert(err);
     }
-    return undefined;
+    return emptyTransition;
   }
 
-  public async doubleSelection(
-    firstSelection: Function,
-    secondSelection: Function
-  ): Promise<{ firstChoise: string; secondChoise: string | IAssignee }> {
+  public async doubleSelection(firstSelection: Function, secondSelection: Function): Promise<{ firstChoise: any; secondChoise: any }> {
     let ok = false;
     let firstChoise = '';
     let secondChoise = '';
@@ -361,14 +356,27 @@ export default class SelectValuesService {
     return { firstChoise, secondChoise };
   }
 
-  public async selectStatusAndAssignee(): Promise<{ status: string; assignee: string }> {
+  public async selectStatusAndAssignee(): Promise<{ status: string; assignee: IAssignee }> {
     const project = configuration.get(CONFIG.WORKING_PROJECT);
     if (store.verifyCurrentProject(project)) {
       const { firstChoise, secondChoise } = await this.doubleSelection(
         this.selectStatus,
-        async () => await this.selectAssignee(true, true, false, undefined)
+        async () => await this.selectAssignee(true, true, undefined)
       );
-      return { status: firstChoise, assignee: (<IAssignee>secondChoise).name };
+      return { status: firstChoise, assignee: <IAssignee>secondChoise };
+    } else {
+      throw new Error(`Working project not correct, please select one valid project. ("Set working project" command)`);
+    }
+  }
+
+  public async selectTransitionAndAssignee(issueKey: string): Promise<{ transtion: ITransition; assignee: IAssignee }> {
+    const project = configuration.get(CONFIG.WORKING_PROJECT);
+    if (store.verifyCurrentProject(project)) {
+      const { firstChoise, secondChoise } = await this.doubleSelection(
+        async () => await this.selectTransition(issueKey),
+        async () => await this.selectAssignee(true, true, undefined)
+      );
+      return { transtion: <ITransition>firstChoise, assignee: <IAssignee>secondChoise };
     } else {
       throw new Error(`Working project not correct, please select one valid project. ("Set working project" command)`);
     }

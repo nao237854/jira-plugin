@@ -2,7 +2,7 @@
   "name": "jira-plugin",
   "displayName": "Jira Plugin",
   "description": "Manage your on-premises/cloud Jira in vscode",
-  "version": "0.22.2-toggl",
+  "version": "0.22.2",
   "publisher": "gioboa",
   "icon": "images/icons/icon.png",
   "galleryBanner": {
@@ -194,6 +194,14 @@
             "type": "string"
           },
           "description": "Setting for map projects key for toggl integration (e.g. PROJECTID=JIRAKEY)",
+          "default": []
+        },
+        "jira-plugin.workingIssueStatusIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Statuses used for during change working issue maped to projects (e.g. TRANSITIONID=PROJECTID)",
           "default": []
         }
       }

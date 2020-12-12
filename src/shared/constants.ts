@@ -30,6 +30,7 @@ export const CONFIG = {
   WORKLOG_MINIMUM_TRACKING_TIME: 'worklogMinimumTrackingTime',
   WORKING_ISSUE_SEARCH_KEY: 'workingIssueFilter',
   TOGGL_API_KEY: 'togglApiKey',
+  WORKING_ISSUE_STATUSES: 'workingIssueStatuses',
 };
 
 // all the tracking time mode
@@ -40,6 +41,7 @@ export const TRACKING_TIME_MODE = {
   NEVER: 'never',
 };
 
+export const DEFAULT_WORKING_ISSUE_STATUS_ID = '31';
 export const DEFAULT_WORKING_ISSUE_ASSIGNEE = 'currentUser()';
 
 // modal answers

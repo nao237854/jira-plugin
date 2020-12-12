@@ -139,7 +139,7 @@ export class Jira implements IJira {
     return await this.jiraInstance.issue.transitionIssue(params);
   }
 
-  async setAssignIssue(params: { issueKey: string; assignee: string }): Promise<void> {
+  async setAssignIssue(params: { issueKey: string; accountId: string | null; assignee?: string | null }): Promise<void> {
     return await this.jiraInstance.issue.assignIssue(params);
   }
 

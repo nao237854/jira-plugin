@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
-import { configuration, store, toggl, utilities } from '.';
-import changeIssueStatus from '../commands/change-issue-status';
-import { IssueItem } from '../explorer/item/issue-item';
+import { configuration, store, utilities } from '.';
 import { CONFIG, NO_WORKING_ISSUE, TRACKING_TIME_MODE } from '../shared/constants';
 import { IWorkingIssue } from './http.model';
 
@@ -19,7 +17,7 @@ export default class StatusBarService {
   }
 
   // setup working project item
-  public async updateWorkingProjectItem(project: string, verifyStoredWorkingIssue: boolean): Promise<void> {
+  public async updateWorkingProjectItem(project: string): Promise<void> {
     if (!store.state.jira) {
       return;
     }
@@ -27,9 +25,6 @@ export default class StatusBarService {
     this.workingProjectItem.command = 'jira-plugin.setWorkingProject';
     this.workingProjectItem.text = `$(clippy) ` + (!!project ? `Project: ${project}` : `Project: NONE`);
     this.workingProjectItem.show();
-    if (configuration.get(CONFIG.ENABLE_WORKING_ISSUE) && !!verifyStoredWorkingIssue) {
-      this.verifyStoredWorkingIssue();
-    }
   }
 
   private workingIssueItemTooltip(workingIssue: IWorkingIssue): string {
@@ -43,36 +38,12 @@ export default class StatusBarService {
     return `Working Issue: ${workingIssue.issue.key || ''}`;
   }
 
-  public verifyStoredWorkingIssue(): void {
-    let data;
-    data = configuration.getGlobalWorkingIssue();
-    if (!!data) {
-      data = JSON.parse(data);
-      // if there is a stored working issue we will use it
-      if (data.issue.fields.project.key === configuration.get(CONFIG.WORKING_PROJECT)) {
-        vscode.commands.executeCommand('jira-plugin.setWorkingIssue', data, undefined);
-        configuration.setGlobalWorkingIssue(undefined);
-        return;
-      }
-    }
-    this.updateWorkingIssueItem();
-  }
-
   // setup working issue item
   public async updateWorkingIssueItem(): Promise<void> {
     this.clearWorkingIssueInterval();
     this.workingIssueItem.color = undefined;
     if (store.state.workingIssue.issue.key !== NO_WORKING_ISSUE.key) {
       if (configuration.get(CONFIG.TRACKING_TIME_MODE) !== TRACKING_TIME_MODE.NEVER) {
-        if (toggl.enabled) {
-          const timeEntry = await toggl.startTimeEntry({
-            issueKey: store.state.workingIssue.issue.key,
-            projectKey: store.state.workingIssue.issue.fields.project.key,
-            summary: store.state.workingIssue.issue.fields.summary,
-            labels: store.state.workingIssue.issue.fields.labels,
-          });
-          store.state.workingIssue.togglTimeEntryId = timeEntry.id;
-        }
         this.startWorkingIssueInterval();
       }
     } else {
@@ -85,14 +56,10 @@ export default class StatusBarService {
     store.state.workingIssue.awayTime = 0;
     this.workingIssueItem.text = this.workingIssueItemText(store.state.workingIssue);
     this.workingIssueItem.show();
-    if (store.state.workingIssue.issue.key !== NO_WORKING_ISSUE.key) {
-      changeIssueStatus(new IssueItem(store.state.workingIssue.issue));
-    }
   }
 
   public async clearWorkingIssueInterval(): Promise<void> {
     if (this.intervalId) {
-      await this.toggleWorkingIssueTimer();
       if (store.state.workingIssue.issue.key === NO_WORKING_ISSUE.key) {
         this.toggleWorkingIssueTimerItem.hide();
       }
@@ -133,13 +100,10 @@ export default class StatusBarService {
   }
 
   public updateToggleWorkingIssueTimerItem(): void {
-    this.toggleWorkingIssueTimerItem.tooltip = (store.state.workingIssue.stopped ? 'Play' : 'Stop') + ' working issue timer';
-    this.toggleWorkingIssueTimerItem.command = 'jira-plugin.toggleWorkingIssueTimer';
+    this.toggleWorkingIssueTimerItem.tooltip = undefined;
     this.toggleWorkingIssueTimerItem.text = this.toggleWorkingIssueTimerItemText(store.state.workingIssue);
-    if (configuration.get(CONFIG.TRACKING_TIME_MODE) !== TRACKING_TIME_MODE.NEVER && !!configuration.get(CONFIG.WORKING_ISSUE_SHOW_TIMER)) {
+    if (configuration.get(CONFIG.TRACKING_TIME_MODE) !== TRACKING_TIME_MODE.NEVER) {
       this.toggleWorkingIssueTimerItem.show();
-    } else {
-      this.toggleWorkingIssueTimerItem.hide();
     }
   }
 
@@ -155,31 +119,8 @@ export default class StatusBarService {
     return text;
   }
 
-  public async toggleWorkingIssueTimer(): Promise<any> {
-    store.state.workingIssue.stopped = !store.state.workingIssue.stopped;
-    if (!store.state.workingIssue.stopped && toggl.enabled && !store.state.workingIssue.togglTimeEntryId) {
-      const timeEntry = await toggl.startTimeEntry({
-        issueKey: store.state.workingIssue.issue.key,
-        projectKey: store.state.workingIssue.issue.fields.project.key,
-        summary: store.state.workingIssue.issue.fields.summary,
-        labels: store.state.workingIssue.issue.fields.labels,
-      });
-      store.state.workingIssue.togglTimeEntryId = timeEntry.id;
-    } else if (store.state.workingIssue.stopped && toggl.enabled && store.state.workingIssue.togglTimeEntryId) {
-      await toggl.stopTimeEntry(store.state.workingIssue.togglTimeEntryId);
-      store.state.workingIssue.togglTimeEntryId = 0;
-    }
-    this.updateToggleWorkingIssueTimerItem();
-  }
-
   public async dispose(): Promise<void> {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-    if (store.state.workingIssue.togglTimeEntryId) {
-      toggl.stopTimeEntry(store.state.workingIssue.togglTimeEntryId);
-      store.state.workingIssue.togglTimeEntryId = 0;
-    }
+    this.clearWorkingIssueInterval();
     this.workingIssueItem.dispose();
     this.workingProjectItem.dispose();
   }

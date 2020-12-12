@@ -15,7 +15,7 @@ export default async function issueAddComment(issueItem: IssueItem, markAsIntern
         // ask for assignee if there is one or more [@] in the comment
         const num = (text.match(new RegExp('[@]', 'g')) || []).length;
         for (let i = 0; i < num; i++) {
-          const assignee = await selectValues.selectAssignee(false, false, true, undefined);
+          const assignee = await selectValues.selectAssignee(false, false, undefined);
           if (!!assignee) {
             text = text.replace('[@]', `[~${assignee}]`);
           } else {

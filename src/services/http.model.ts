@@ -8,7 +8,7 @@ export interface IJira {
   getAssignees(project: string): Promise<IAssignee[]>;
   getTransitions(issueKey: string): Promise<ITransitions>;
   setTransition(params: { issueKey: string; transition: ISetTransition }): Promise<void>;
-  setAssignIssue(params: { issueKey: string; assignee: string }): Promise<void>;
+  setAssignIssue(params: { issueKey: string; accountId: string | null; assignee?: string | null }): Promise<void>;
   addNewComment(params: { issueKey: string; comment: IAddComment }): Promise<IAddCommentResponse>;
   addWorkLog(params: IAddWorkLog): Promise<void>;
   getAllIssueTypes(): Promise<IIssueType[]>;
@@ -89,7 +89,7 @@ export interface ISetTransition {
 }
 
 export interface IAssignee {
-  key: string;
+  accountId: string | null;
   name: string;
   displayName: string;
   active: boolean;

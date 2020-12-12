@@ -41,7 +41,8 @@ export default class StoreService {
       utilities.createDocumentLinkProvider(this.state.projects);
 
       const project = configuration.get(CONFIG.WORKING_PROJECT);
-      statusBar.updateWorkingProjectItem(project, true);
+      statusBar.updateWorkingProjectItem(project);
+      statusBar.updateWorkingIssueItem();
       // refresh Jira explorer list
       if (project) {
         // start notification service
@@ -53,7 +54,7 @@ export default class StoreService {
     } catch (err) {
       configuration.set(CONFIG.WORKING_PROJECT, '');
       setTimeout(() => {
-        statusBar.updateWorkingProjectItem('', true);
+        statusBar.updateWorkingProjectItem('');
       }, 1000);
       this.changeStateIssues('', '', []);
       logger.printErrorMessageInOutput(err);
@@ -68,12 +69,12 @@ export default class StoreService {
     return !!project && this.state.projects.filter((prj: IProject) => prj.key === project).length > 0;
   }
 
-  public changeStateProject(project: string, checkGlobalStore: boolean): void {
+  public changeStateProject(project: string): void {
     if (!!project) {
       if (configuration.get(CONFIG.WORKING_PROJECT) !== project) {
         configuration.set(CONFIG.WORKING_PROJECT, project);
         // update project item in the status bar
-        statusBar.updateWorkingProjectItem(project, checkGlobalStore);
+        statusBar.updateWorkingProjectItem(project);
         // loading in Jira explorer
         this.changeStateIssues(LOADING.text, '', []);
         // start notification service

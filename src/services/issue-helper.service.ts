@@ -349,7 +349,7 @@ export default class IssueHelperService {
       }
       if (action === 'Set as working issue') {
         const issue = await store.state.jira.getIssueByKey(createdIssue.key);
-        vscode.commands.executeCommand('jira-plugin.setWorkingIssue', undefined, issue);
+        vscode.commands.executeCommand('jira-plugin.setWorkingIssue', issue);
       }
     }
   }

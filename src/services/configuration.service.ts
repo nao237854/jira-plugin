@@ -7,6 +7,7 @@ import {
   CONFIG_WORKING_ISSUE,
   CREDENTIALS_SEPARATOR,
   DEFAULT_WORKING_ISSUE_ASSIGNEE,
+  DEFAULT_WORKING_ISSUE_STATUS_ID,
 } from '../shared/constants';
 import { IConfiguration } from './configuration.model';
 import { IWorkingIssue } from './http.model';
@@ -128,5 +129,19 @@ export default class ConfigurationService {
           return index === 0 ? `${quotedB}` : `${a},${quotedB}`;
         }, '')
       : DEFAULT_WORKING_ISSUE_ASSIGNEE;
+  }
+
+  public workingIssueStatuses(projectKey: string): string {
+    const statusList = this.get(CONFIG.WORKING_ISSUE_STATUSES);
+    let status = DEFAULT_WORKING_ISSUE_STATUS_ID;
+    statusList.forEach((k: string) => {
+      if (k.indexOf('=') > 0) {
+        const keys = k.split('=');
+        if (projectKey === keys[1]) {
+          status = keys[0];
+        }
+      }
+    });
+    return status;
   }
 }

@@ -14,5 +14,6 @@
     "titleBar.activeForeground": "#000000",
     "titleBar.inactiveBackground": "#e6e6e6CC",
     "titleBar.inactiveForeground": "#000000"
-  }
+  },
+  "jira-plugin.workingProject": "TEST"
 }
